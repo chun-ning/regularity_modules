@@ -1,34 +1,41 @@
 # Regularity Modules
 
 Verilog implementations and tests for arithmetic and basic logic modules.
-The directory layout follows Logikbench's categories and per-module `rtl/` and
-`testbench/` organization.
+Multiple implementations share a family folder; single implementations live
+directly in their category. All testbenches are collected in `test/`.
 
 ```text
 regularity_modules/
 ├── Makefile
 ├── arithmetic/
-│   ├── abs/
-│   ├── adder_carry_save/
-│   ├── adder_carry_skip/
-│   ├── adder_ripple_carry/
-│   ├── comparator/
-│   ├── div_restoring/
-│   ├── mul_array/
-│   ├── mul_shift_add/
-│   └── sin_cos_cordic/
-│       ├── rtl/
-│       │   ├── sin_cos_cordic.v
-│       │   └── func/atan_const.v
-│       └── testbench/sin_cos_cordic_test.v
-└── basic/
-    └── mux/rtl/mux.v
+│   ├── abs.v
+│   ├── comparator.v
+│   ├── div_restoring.v
+│   ├── sin_cos_cordic.v
+│   ├── adder/
+│   │   ├── adder_carry_save.v
+│   │   ├── adder_carry_skip.v
+│   │   └── adder_ripple_carry.v
+│   ├── mul/
+│   │   ├── mul_array.v
+│   │   └── mul_shift_add.v
+│   └── func/atan_const.v
+├── basic/
+│   └── mux.v
+└── test/
+    ├── abs_test.v
+    ├── adder_carry_save_test.v
+    ├── adder_carry_skip_test.v
+    ├── adder_ripple_carry_test.v
+    ├── comparator_test.v
+    ├── div_restoring_test.v
+    ├── mul_array_test.v
+    ├── mul_shift_add_test.v
+    └── sin_cos_cordic_test.v
 ```
 
-Each arithmetic module has `rtl/<module>.v` and
-`testbench/<module>_test.v`. ABS uses the ripple-carry adder and the basic mux;
-the Makefile includes both dependencies. CORDIC's lookup function is included
-from its own `rtl/func/` directory.
+ABS uses the ripple-carry adder and the basic mux; the Makefile includes both
+dependencies. CORDIC includes its lookup function from `arithmetic/func/`.
 
 ## Run the tests
 
@@ -51,8 +58,7 @@ make -C regularity_modules sin_cos_cordic
 ```
 
 `basic_test` compiles the mux. Its behavior is also exercised by the ABS tests.
-Simulation outputs live in each module's `testbench/build/` and
-`testbench/waves/` directories and are ignored by Git. For tests with optional
+Simulation outputs live in `regularity_modules/test/build/` and
+`regularity_modules/test/waves/` and are ignored by Git. For tests with optional
 waveforms, pass `VVP_FLAGS=+dump` to make. Older generated outputs are retained
-locally under ignored `regularity_modules/build/legacy/` and
-`regularity_modules/waves/legacy/` directories.
+locally in the `legacy/` subfolders of those output directories.

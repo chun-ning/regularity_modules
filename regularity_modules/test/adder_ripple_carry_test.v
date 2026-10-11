@@ -49,7 +49,7 @@ module adder_test #(parameter integer N = 8); // Change N here
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/adder.vcd");
+        $dumpfile("test/waves/adder.vcd");
         $dumpvars(0, adder_test);
 
         errors = 0;

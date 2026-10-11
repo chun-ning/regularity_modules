@@ -50,7 +50,7 @@ module adder_carry_save_test #(parameter integer N = 8); // Change N here
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/adder_carry_save.vcd");
+        $dumpfile("test/waves/adder_carry_save.vcd");
         $dumpvars(0, adder_carry_save_test);
 
         errors = 0;

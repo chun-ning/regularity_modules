@@ -34,7 +34,7 @@ module abs_test #(parameter integer N = 8); // Change N here
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/abs.vcd");
+        $dumpfile("test/waves/abs.vcd");
         $dumpvars(0, abs_test);
         if (N < 1) $fatal(1, "N must be at least 1.");
         errors = 0;

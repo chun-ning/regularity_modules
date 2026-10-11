@@ -59,7 +59,7 @@ module sin_cos_cordic_test;
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/sin_cos_cordic.vcd");
+        $dumpfile("test/waves/sin_cos_cordic.vcd");
         $dumpvars(0, sin_cos_cordic_test);
         errors = 0;
         checks = 0;

@@ -40,7 +40,7 @@ module mul_array_test #(parameter integer N = 8);
         if (N < 1) $fatal(1, "N must be at least 1.");
         // Waveforms are optional because exhaustive testing produces large files.
         if ($test$plusargs("dump")) begin
-            $dumpfile("testbench/waves/mul_array.vcd");
+            $dumpfile("test/waves/mul_array.vcd");
             $dumpvars(0, mul_array_test);
         end
 

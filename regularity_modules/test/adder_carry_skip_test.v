@@ -84,7 +84,7 @@ module adder_carry_skip_test;
 
     initial begin
         if ($test$plusargs("dump")) begin
-            $dumpfile("testbench/waves/adder_carry_skip.vcd");
+            $dumpfile("test/waves/adder_carry_skip.vcd");
             $dumpvars(0, adder_carry_skip_test);
         end
         wait (&done);

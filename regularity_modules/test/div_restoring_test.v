@@ -43,7 +43,7 @@ module div_restoring_test #(parameter integer N = 8); // Change N here
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/div_restoring.vcd");
+        $dumpfile("test/waves/div_restoring.vcd");
         $dumpvars(0, div_restoring_test);
 
         errors = 0;

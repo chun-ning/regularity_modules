@@ -69,7 +69,7 @@ module comparator_test;
 
     initial begin
         if ($test$plusargs("dump")) begin
-            $dumpfile("testbench/waves/comparator.vcd");
+            $dumpfile("test/waves/comparator.vcd");
             $dumpvars(0, comparator_test);
         end
         wait (&done);

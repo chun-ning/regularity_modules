@@ -44,7 +44,7 @@ module mul_shift_add_test #(parameter integer N = 8); // Change N here
     endtask
 
     initial begin
-        $dumpfile("testbench/waves/mul_shift_add.vcd");
+        $dumpfile("test/waves/mul_shift_add.vcd");
         $dumpvars(0, mul_shift_add_test);
 
         errors = 0;
