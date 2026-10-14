@@ -9,7 +9,7 @@ IVERILOG = iverilog
 VVP = vvp
 VVP_FLAGS ?=
 
-ARITHMETIC_MODULES := adder_ripple_carry adder_carry_save adder_carry_skip mul_shift_add mul_array div_restoring comparator abs sin_cos_cordic
+ARITHMETIC_MODULES := adder_ripple_carry adder_carry_save adder_carry_skip mul_shift_add mul_array div_restoring comparator abs sin_cos_cordic log2
 
 .DEFAULT_GOAL := test
 .PHONY: test arithmetic_test basic_test adder_test mul_test div_test comparator_test $(ARITHMETIC_MODULES) mux
@@ -31,6 +31,9 @@ sin_cos_cordic_HEADERS := $(ARITHMETIC_DIR)/func/atan_const.v
 $(foreach module,$(ARITHMETIC_MODULES),$(eval $(module)_RTL := $(ARITHMETIC_DIR)/$(module).v))
 $(foreach module,adder_ripple_carry adder_carry_save adder_carry_skip,$(eval $(module)_RTL := $(ARITHMETIC_DIR)/adder/$(module).v))
 $(foreach module,mul_shift_add mul_array,$(eval $(module)_RTL := $(ARITHMETIC_DIR)/mul/$(module).v))
+
+# Comparator resides in basic/ after the category move.
+comparator_RTL := $(BASIC_DIR)/comparator.v
 
 # All testbenches run from the project root and share test/build and test/waves.
 define ARITHMETIC_TEST
