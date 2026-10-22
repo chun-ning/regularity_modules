@@ -9,7 +9,7 @@ IVERILOG = iverilog
 VVP = vvp
 VVP_FLAGS ?=
 
-ARITHMETIC_MODULES := adder_ripple_carry adder_carry_save adder_carry_skip mul_shift_add mul_array div_restoring comparator abs sin_cos_cordic log2
+ARITHMETIC_MODULES := adder_ripple_carry adder_carry_save adder_carry_skip mul_shift_add mul_array div_restoring comparator abs sin_cos_cordic log2 avgn clamp
 
 .DEFAULT_GOAL := test
 .PHONY: test arithmetic_test basic_test adder_test mul_test div_test comparator_test $(ARITHMETIC_MODULES) mux
@@ -25,6 +25,8 @@ comparator_test: comparator
 # The existing ripple-carry testbench uses the top module name adder_test.
 adder_ripple_carry_TOP := adder_test
 abs_SOURCES := $(ARITHMETIC_DIR)/adder/adder_ripple_carry.v $(BASIC_DIR)/mux.v
+avgn_SOURCES := $(ARITHMETIC_DIR)/adder/adder_ripple_carry.v $(ARITHMETIC_DIR)/div_restoring.v
+clamp_SOURCES := $(BASIC_DIR)/comparator.v $(BASIC_DIR)/mux.v
 sin_cos_cordic_HEADERS := $(ARITHMETIC_DIR)/func/atan_const.v
 
 # Group multiple implementations; single implementations live in arithmetic/.

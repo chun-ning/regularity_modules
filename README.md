@@ -9,7 +9,6 @@ regularity_modules/
 ├── Makefile
 ├── arithmetic/
 │   ├── abs.v
-│   ├── comparator.v
 │   ├── div_restoring.v
 │   ├── sin_cos_cordic.v
 │   ├── adder/
@@ -21,7 +20,8 @@ regularity_modules/
 │   │   └── mul_shift_add.v
 │   └── func/atan_const.v
 ├── basic/
-│   └── mux.v
+│   ├── mux.v
+│   └── comparator.v
 └── test/
     ├── abs_test.v
     ├── adder_carry_save_test.v
@@ -57,8 +57,6 @@ make -C regularity_modules abs
 make -C regularity_modules sin_cos_cordic
 ```
 
-`basic_test` compiles the mux. Its behavior is also exercised by the ABS tests.
 Simulation outputs live in `regularity_modules/test/build/` and
 `regularity_modules/test/waves/` and are ignored by Git. For tests with optional
-waveforms, pass `VVP_FLAGS=+dump` to make. Older generated outputs are retained
-locally in the `legacy/` subfolders of those output directories.
+waveforms, pass `VVP_FLAGS=+dump` to make. 
