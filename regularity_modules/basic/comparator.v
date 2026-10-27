@@ -9,24 +9,24 @@ module comparator #(parameter integer N = 128)(a, b, out);
     output  [1:0] out;
 
     // Unsigned comparison: 0 = less than, 1 = equal, 2 = greater than.
-    wire [1:0] result [N:0];
-    assign result[N] = 2'd1;
+    wire [N:0] equal, greater;
+    assign equal[N] = 1'b1;
+    assign greater[N] = 1'b0;
 
     genvar i;
     generate
         for (i = N-1; i >= 0; i = i - 1) begin : compare_bits
-            wire [1:0] compare;
-            assign compare = (!a[i] & b[i]) ? 2'd0 :
-                             (!(a[i] ^ b[i]) ? 2'd1 :
-                             ((a[i] & !b[i]) ? 2'd2 : 2'd3));
-
-            // Keep a higher-bit decision, otherwise compare this bit
-            assign result[i] = (result[i+1] != 2'd1) ? result[i+1] :
-                               (compare == 2'd0) ? 2'd0 :
-                               (compare == 2'd2) ? 2'd2 : 2'd1;
+            wire same, not_b, bit_greater;
+            // This bit decides only when all higher bits are equal.
+            xnor (same, a[i], b[i]);
+            not (not_b, b[i]);
+            and (equal[i], equal[i+1], same);
+            and (bit_greater, equal[i+1], a[i], not_b);
+            or (greater[i], greater[i+1], bit_greater);
         end
     endgenerate
 
-    assign out = result[0];
+    // If neither greater nor equal is asserted, a is less than b.
+    assign out = {greater[0], equal[0]};
 
 endmodule

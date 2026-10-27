@@ -40,31 +40,29 @@ module sin_cos_cordic #(
     // Angles outside of range: rotate by 180 degrees, move into convergence range
     // ------------------------------------------------------------
 
-    reg signed [17:0] x_init;
-    reg signed [17:0] y_init;
-    reg signed [15:0] z_init;
+    wire signed [17:0] x_init;
+    wire signed [17:0] y_init;
+    wire signed [15:0] z_init;
+    wire above_range, below_range, outside_range;
+    wire [15:0] positive_adjusted, negative_adjusted, lower_selected;
 
-    always @(*) begin
-        // angle > +90 degrees
-        if (angle > 16'sd16384) begin
-            x_init = -K;
-            y_init = 18'sd0;
-            // subtract 180 degrees
-            z_init = angle - 16'sh8000;
-        end
-        // angle < -90 degrees
-        else if (angle < -16'sd16384) begin
-
-            x_init = -K;
-            y_init = 18'sd0;
-            // add 180 degrees
-            z_init = angle + 16'sh8000;
-        end else begin
-            x_init = K;
-            y_init = 18'sd0;
-            z_init = angle;
-        end
-    end
+    assign above_range = angle > 16'sd16384;
+    assign below_range = angle < -16'sd16384;
+    or (outside_range, above_range, below_range);
+    assign positive_adjusted = angle - 16'sh8000;
+    assign negative_adjusted = angle + 16'sh8000;
+    if_else #(.N(18)) initial_x (
+        .condition(outside_range), .if_value(-K), .else_value(K), .out(x_init)
+    );
+    assign y_init = 18'sd0;
+    if_else #(.N(16)) negative_angle (
+        .condition(below_range), .if_value(negative_adjusted),
+        .else_value(angle), .out(lower_selected)
+    );
+    if_else #(.N(16)) positive_angle (
+        .condition(above_range), .if_value(positive_adjusted),
+        .else_value(lower_selected), .out(z_init)
+    );
 
     assign x[0] = x_init;
     assign y[0] = y_init;
@@ -78,9 +76,28 @@ module sin_cos_cordic #(
     genvar i;
     generate
         for (i = 0; i < STAGES; i = i + 1) begin : CORDIC_STAGE
-            assign x[i+1] = (z[i] >= 0) ? x[i] - (y[i] >>> i) : x[i] + (y[i] >>> i);
-            assign y[i+1] = (z[i] >= 0) ? y[i] + (x[i] >>> i) : y[i] - (x[i] >>> i);
-            assign z[i+1] = (z[i] >= 0) ? z[i] - atan_const(i) : z[i] + atan_const(i);
+            wire [17:0] x_positive, x_negative, y_positive, y_negative;
+            wire [15:0] z_positive, z_negative;
+            wire positive_rotation;
+            assign positive_rotation = ~z[i][15];
+            assign x_positive = x[i] - (y[i] >>> i);
+            assign x_negative = x[i] + (y[i] >>> i);
+            assign y_positive = y[i] + (x[i] >>> i);
+            assign y_negative = y[i] - (x[i] >>> i);
+            assign z_positive = z[i] - atan_const(i);
+            assign z_negative = z[i] + atan_const(i);
+            if_else #(.N(18)) select_x (
+                .condition(positive_rotation), .if_value(x_positive),
+                .else_value(x_negative), .out(x[i+1])
+            );
+            if_else #(.N(18)) select_y (
+                .condition(positive_rotation), .if_value(y_positive),
+                .else_value(y_negative), .out(y[i+1])
+            );
+            if_else #(.N(16)) select_z (
+                .condition(positive_rotation), .if_value(z_positive),
+                .else_value(z_negative), .out(z[i+1])
+            );
         end
     endgenerate
 
@@ -94,10 +111,21 @@ module sin_cos_cordic #(
     // -32768  =  -1.0
     // ------------------------------------------------------------
 
-    assign cosine = (x[STAGES] > 18'sd32767) ? 16'sd32767 : (x[STAGES] < -18'sd32768)
-                    ? -16'sd32768 : x[STAGES][15:0];
-    assign sine = (y[STAGES] > 18'sd32767) ? 16'sd32767 : (y[STAGES] < -18'sd32768)
-                    ? -16'sd32768 : y[STAGES][15:0];
-
-
+    wire [15:0] cosine_low_checked, sine_low_checked;
+    if_else #(.N(16)) cosine_low (
+        .condition(x[STAGES] < -18'sd32768), .if_value(-16'sd32768),
+        .else_value(x[STAGES][15:0]), .out(cosine_low_checked)
+    );
+    if_else #(.N(16)) cosine_high (
+        .condition(x[STAGES] > 18'sd32767), .if_value(16'sd32767),
+        .else_value(cosine_low_checked), .out(cosine)
+    );
+    if_else #(.N(16)) sine_low (
+        .condition(y[STAGES] < -18'sd32768), .if_value(-16'sd32768),
+        .else_value(y[STAGES][15:0]), .out(sine_low_checked)
+    );
+    if_else #(.N(16)) sine_high (
+        .condition(y[STAGES] > 18'sd32767), .if_value(16'sd32767),
+        .else_value(sine_low_checked), .out(sine)
+    );
 endmodule

@@ -28,7 +28,10 @@ module div_restoring #(parameter integer N = 128)(a, b, quotient, remainder);
 
             // restores the remainder and produces a zero quotient bit
             assign quotient[N-1-i] = ~difference[N+1];
-            assign partial_remainder[i+1] = difference[N+1] ? shifted_remainder : difference[N:0];
+            if_else #(.N(N+1)) restore_select (
+                .condition(difference[N+1]), .if_value(shifted_remainder),
+                .else_value(difference[N:0]), .out(partial_remainder[i+1])
+            );
         end
     endgenerate
 

@@ -34,7 +34,10 @@ module adder_carry_skip #(parameter integer N = 128)(a, b, carry_in, sum, carry_
             end
 
             // Skip the block when every bit propagates the incoming carry
-            assign carry[block_index+1] = (&p[START +: WIDTH]) ? carry[block_index] : ripple[WIDTH];
+            if_else #(.N(1)) skip_select (
+                .condition(&p[START +: WIDTH]), .if_value(carry[block_index]),
+                .else_value(ripple[WIDTH]), .out(carry[block_index+1])
+            );
         end
     endgenerate
 
